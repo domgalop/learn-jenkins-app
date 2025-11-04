@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('w/o docker') {
+        stage('w/o docker test') {
             steps {
                 sh '''
                     echo '"Without Docker"'
