@@ -6,25 +6,6 @@ pipeline {
     }
 
     stages {
-        stage('Test') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-
-            steps {
-                sh '''
-                    ls -la
-                    node --version
-                    npm --version
-                    npm ci
-                    npm test
-                '''
-            }
-        }
-
         stage('Build') {
             agent {
                 docker {
@@ -41,9 +22,31 @@ pipeline {
                     npm ci
                     npm run build
                     ls -la
-                    test -f build/$BUILD_FILE_NAME
                 '''
             }
+        }
+
+        stage('Test') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+
+            steps {
+                echo 'Running tests...'
+                sh '''
+                    test -f build/$BUILD_FILE_NAME
+                    npm test
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            junit '**/test-results/**/*.xml'
         }
     }
 }
